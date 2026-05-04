@@ -52,7 +52,8 @@ AI / ML     PyTorch · ViT · MAE · YOLOv11 · DINOv2 · FedAvg
 ### 📊 GitHub Stats
 
 <!-- STATS-AUTO-START -->
-
+<img src="https://streak-stats.demolab.com?user=dechang64&theme=tokyonight&hide_border=true" width="48%"/>
+<img src="https://skillicons.dev/icons?i=rust,python,pytorch,docker,git,linux,grpc,react,streamlit,sqlite&theme=dark" width="48%"/>
 <!-- STATS-AUTO-END -->
 
 ### 📫 联系方式
