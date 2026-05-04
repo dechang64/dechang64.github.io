@@ -1,0 +1,107 @@
+{
+  "categories": {
+    "🏛️ 核心项目": ["federated-ai-platform", "FundFL", "monetary-policy-lab"],
+    "🔬 联邦学习系列": ["organoid-fl", "embodied-fl", "medical-fl", "PCB-Defect-FL", "reading-fl", "ewa-fed", "twc-fl-prod"],
+    "🧠 AI & 前沿交叉": ["NeuroSync", "embroidery-agent", "mural-restoration", "pai", "dgy-treehole", "suzhou-tt-research", "AIBT2026"],
+    "🔧 工具 & 基础设施": ["AI-for-TT-OPC", "tt_opc_platform", "hw_opc_platform"],
+    "📊 金融 & 研究": ["mutual-fund-risk-adjusted-performance", "MPM_Revisit_Research_Analysis"]
+  },
+  "exclude": ["dechang64", "dechang64.github.io"],
+  "descriptions": {
+    "ewa-fed": "Education-Weight-Adaptive Federated Learning",
+    "twc-fl-prod": "Sanjiang University FL Production Platform",
+    "dgy-treehole": "Anonymous Treehole Platform",
+    "suzhou-tt-research": "Suzhou Technology Transfer Research",
+    "AIBT2026": "Forum on AI & BioTech 2026 Conference Website"
+  },
+  "homepage_display": {
+    "federated-ai-platform": {
+      "desc": "Self-built HNSW · FedAvg · RAG · CoT · Agent · 5-Layer Hallucination Defense",
+      "tags": ["Rust", "gRPC", "Python"]
+    },
+    "FundFL": {
+      "desc": "Hedge fund analysis · Rust HNSW vector DB · CROWN defense · Blockchain audit",
+      "tags": ["Rust", "PyTorch", "SQLite"]
+    },
+    "monetary-policy-lab": {
+      "desc": "Fed announcement NLP · Event study · Two-shocks decomposition · FL integration",
+      "tags": ["Python", "Streamlit", "FRED API"]
+    },
+    "NeuroSync": {
+      "desc": "fMRI prediction · SHAP · CROWN Conformity Defense · SCL contrastive learning",
+      "tags": ["PyTorch", "MRI", "XAI"]
+    },
+    "organoid-fl": {
+      "desc": "Organoid image FL · AUROC 99.17% · Blockchain audit · Rust HNSW",
+      "tags": ["PyTorch", "FL", "Blockchain"]
+    },
+    "embodied-fl": {
+      "desc": "Embodied AI · YOLO federated training · NDA data protection",
+      "tags": ["YOLO", "FL", "Privacy"]
+    },
+    "medical-fl": {
+      "desc": "Medical imaging · ViT + MAE · FedAvg · Prototype contrastive learning",
+      "tags": ["ViT", "MAE", "FL"]
+    },
+    "PCB-Defect-FL": {
+      "desc": "PCB defect detection · YOLOv11 · DINOv2 · Federated classification",
+      "tags": ["YOLOv11", "DINOv2", "FL"]
+    },
+    "reading-fl": {
+      "desc": "Campus reading club · Prototype bank · Emotion FL · HNSW",
+      "tags": ["FL", "NLP", "HNSW"]
+    },
+    "embroidery-agent": {
+      "desc": "Embroidery AI agent · Stitch generation · Style fingerprint · FL collaboration",
+      "tags": ["Agent", "FL", "Art"]
+    },
+    "mural-restoration": {
+      "desc": "Dunhuang mural restoration FL · YOLO + DINOv2 · Heritage preservation",
+      "tags": ["YOLO", "DINOv2", "Heritage"]
+    },
+    "pai": {
+      "desc": "Philanthropic Asset Intelligence · Federated RAG · Gates Foundation 2026",
+      "tags": ["RAG", "GPT", "Philanthropy"]
+    },
+    "ewa-fed": {
+      "desc": "Education-Weight-Adaptive Federated Learning",
+      "tags": ["FL", "Education", "Python"]
+    },
+    "twc-fl-prod": {
+      "desc": "Sanjiang University FL Production Platform",
+      "tags": ["FL", "Production", "Python"]
+    },
+    "dgy-treehole": {
+      "desc": "Anonymous Treehole Platform",
+      "tags": ["HTML", "Web"]
+    },
+    "suzhou-tt-research": {
+      "desc": "Suzhou Technology Transfer Research",
+      "tags": ["TypeScript", "Research"]
+    },
+    "AIBT2026": {
+      "desc": "Forum on AI & BioTech 2026 Conference",
+      "tags": ["HTML", "Conference"]
+    },
+    "AI-for-TT-OPC": {
+      "desc": "Tech Transfer OPC Guide · AI Agent empowered",
+      "tags": ["Guide", "AI", "OPC"]
+    },
+    "tt_opc_platform": {
+      "desc": "Tech Transfer OPC Platform · Hardware certification",
+      "tags": ["Python", "OPC"]
+    },
+    "hw_opc_platform": {
+      "desc": "Hardware OPC Platform · Certification management",
+      "tags": ["Python", "Hardware"]
+    },
+    "mutual-fund-risk-adjusted-performance": {
+      "desc": "Mutual Fund Risk-Adjusted Performance · 60-Month Empirical Study",
+      "tags": ["Finance", "Research"]
+    },
+    "MPM_Revisit_Research_Analysis": {
+      "desc": "Multi-Project Management Revisit Research",
+      "tags": ["Research", "Management"]
+    }
+  }
+}
