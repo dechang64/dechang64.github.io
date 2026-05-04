@@ -14,10 +14,28 @@ CONFIG_PATH = os.path.join(REPO_DIR, "repos-config.json")
 README_PATH = os.path.join(REPO_DIR, "README.md")
 HTML_PATH = os.path.join(REPO_DIR, "index.html")
 
-START_MARKER = "<!-- AUTO-GENERATED-START -->"
-END_MARKER = "<!-- AUTO-GENERATED-END -->"
+REPO_START = "<!-- AUTO-GENERATED-START -->"
+REPO_END = "<!-- AUTO-GENERATED-END -->"
 HTML_START = "<!-- PROJECTS-AUTO-START -->"
 HTML_END = "<!-- PROJECTS-AUTO-END -->"
+STATS_START = "<!-- STATS-AUTO-START -->"
+STATS_END = "<!-- STATS-AUTO-END -->"
+
+STATS_PRIMARY_URL = (
+    "https://github-readme-stats.vercel.app/api"
+    f"?username={GITHUB_USER}&show_icons=true&theme=tokyonight&hide_border=true&count_private=true"
+)
+STATS_LANGS_URL = (
+    "https://github-readme-stats.vercel.app/api/top-langs/"
+    f"?username={GITHUB_USER}&layout=compact&theme=tokyonight&hide_border=true&langs_count=8"
+)
+STATS_STREAK_URL = (
+    f"https://streak-stats.demolab.com?user={GITHUB_USER}&theme=tokyonight&hide_border=true"
+)
+STATS_SKILLS_ICONS = (
+    "https://skillicons.dev/icons?i=rust,python,pytorch,docker,git,linux,"
+    "grpc,react,streamlit,sqlite&theme=dark"
+)
 
 
 def fetch_repos():
@@ -39,7 +57,31 @@ def star_badge(count):
     return f" ⭐{count}" if count > 0 else ""
 
 
+def check_url(url, timeout=5):
+    """Return True if URL returns HTTP 200."""
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "stats-check"})
+        resp = urllib.request.urlopen(req, timeout=timeout)
+        return resp.status == 200
+    except Exception:
+        return False
+
+
+def generate_stats():
+    """Detect which stats service is available and generate markdown."""
+    if check_url(STATS_PRIMARY_URL):
+        return (
+            f'<img src="{STATS_PRIMARY_URL}" width="48%"/>\n'
+            f'<img src="{STATS_LANGS_URL}" width="48%"/>'
+        )
+    return (
+        f'<img src="{STATS_STREAK_URL}" width="48%"/>\n'
+        f'<img src="{STATS_SKILLS_ICONS}" width="48%"/>'
+    )
+
+
 def generate_section(title, repo_names, repo_map, config):
+    """Generate a markdown table for one category."""
     desc_overrides = config.get("descriptions", {})
     rows = []
     for name in repo_names:
@@ -61,31 +103,32 @@ def generate_section(title, repo_names, repo_map, config):
         return ""
 
     header = "| 项目 | 简介 |"
-    separator = "|------|------|"
+    sep = "|------|------|"
     has_lang = any(repo_map.get(n, {}).get("language") for n in repo_names if n in repo_map)
     has_stars = any(repo_map.get(n, {}).get("stargazers_count", 0) > 0 for n in repo_names if n in repo_map)
     if has_lang:
         header += " 语言 |"
-        separator += "------|"
+        sep += "------|"
     if has_stars:
         header += " ⭐ |"
-        separator += "----|"
+        sep += "----|"
 
-    return f"### {title}\n\n{header}\n{separator}\n" + "\n".join(rows)
+    return f"### {title}\n\n{header}\n{sep}\n" + "\n".join(rows)
 
 
 def generate_uncategorized(repos, config):
+    """Generate table for repos not in any category."""
     categorized = set()
     for names in config["categories"].values():
         categorized.update(names)
     categorized.update(config.get("exclude", []))
-    uncategorized = [r for r in repos if r["name"] not in categorized]
-    if not uncategorized:
+    uncat = [r for r in repos if r["name"] not in categorized]
+    if not uncat:
         return ""
 
     desc_overrides = config.get("descriptions", {})
     rows = []
-    for r in uncategorized:
+    for r in uncat:
         desc = desc_overrides.get(r["name"]) or r.get("description") or ""
         lang = r.get("language") or ""
         badge = star_badge(r.get("stargazers_count", 0))
@@ -98,17 +141,17 @@ def generate_uncategorized(repos, config):
         rows.append("| " + " | ".join(cols) + " |")
 
     header = "| 项目 | 简介 |"
-    separator = "|------|------|"
-    has_lang = any(r.get("language") for r in uncategorized)
-    has_stars = any(r.get("stargazers_count", 0) > 0 for r in uncategorized)
+    sep = "|------|------|"
+    has_lang = any(r.get("language") for r in uncat)
+    has_stars = any(r.get("stargazers_count", 0) > 0 for r in uncat)
     if has_lang:
         header += " 语言 |"
-        separator += "------|"
+        sep += "------|"
     if has_stars:
         header += " ⭐ |"
-        separator += "----|"
+        sep += "----|"
 
-    return f"### 📦 其他项目\n\n{header}\n{separator}\n" + "\n".join(rows)
+    return f"### 📦 其他项目\n\n{header}\n{sep}\n" + "\n".join(rows)
 
 
 def generate_html_projects(repos, config):
@@ -116,71 +159,49 @@ def generate_html_projects(repos, config):
     display = config.get("homepage_display", {})
     desc_overrides = config.get("descriptions", {})
 
-    # Collect all repos in order
-    all_names = []
+    categorized = set()
     for names in config["categories"].values():
-        all_names.extend(names)
+        categorized.update(names)
+    categorized.update(config.get("exclude", []))
 
-    repo_map = {r["name"]: r for r in repos}
     cards = []
-
-    for name in all_names:
-        if name not in repo_map:
+    for r in repos:
+        name = r["name"]
+        if name in config.get("exclude", []):
             continue
-        r = repo_map[name]
+
         info = display.get(name, {})
         desc = info.get("desc") or desc_overrides.get(name) or r.get("description") or ""
-        tags = info.get("tags") or ([r["language"]] if r.get("language") else [])
+        tags = info.get("tags", [])
+        if not tags and r.get("language"):
+            tags = [r["language"]]
+
         stars = r.get("stargazers_count", 0)
+        star_html = f' <span style="color:#f59e0b">⭐{stars}</span>' if stars > 0 else ""
 
         tags_html = "".join(f'<span class="tag">{html.escape(t)}</span>' for t in tags)
-        star_html = f' <span class="tag" style="background:#1a3a2a;color:#4ade80">⭐ {stars}</span>' if stars > 0 else ""
 
         cards.append(
             f'    <div class="proj">\n'
-            f'      <h3>{html.escape(name)}</h3>\n'
+            f'      <h3><a href="https://github.com/{GITHUB_USER}/{html.escape(name)}" '
+            f'style="color:#4a9eff;text-decoration:none">{html.escape(name)}</a>{star_html}</h3>\n'
             f'      <p>{html.escape(desc)}</p>\n'
-            f'      {tags_html}{star_html}\n'
+            f'      {tags_html}\n'
             f'    </div>'
         )
-
-    # Uncategorized
-    categorized = set(all_names) | set(config.get("exclude", []))
-    for r in repos:
-        if r["name"] not in categorized:
-            name = r["name"]
-            info = display.get(name, {})
-            desc = info.get("desc") or desc_overrides.get(name) or r.get("description") or ""
-            tags = info.get("tags") or ([r["language"]] if r.get("language") else [])
-            stars = r.get("stargazers_count", 0)
-            tags_html = "".join(f'<span class="tag">{html.escape(t)}</span>' for t in tags)
-            star_html = f' <span class="tag" style="background:#1a3a2a;color:#4ade80">⭐ {stars}</span>' if stars > 0 else ""
-            cards.append(
-                f'    <div class="proj">\n'
-                f'      <h3>{html.escape(name)}</h3>\n'
-                f'      <p>{html.escape(desc)}</p>\n'
-                f'      {tags_html}{star_html}\n'
-                f'    </div>'
-            )
 
     return "\n".join(cards)
 
 
-def update_file(filepath, start_marker, end_marker, content):
-    with open(filepath, "r") as f:
-        text = f.read()
-
-    pattern = re.escape(start_marker) + r".*?" + re.escape(end_marker)
-    replacement = start_marker + "\n" + content + "\n" + end_marker
-
+def replace_section(text, start, end, content):
+    """Replace content between markers."""
+    pattern = re.escape(start) + r".*?" + re.escape(end)
+    replacement = start + "\n" + content + "\n" + end
     new_text, count = re.subn(pattern, replacement, text, flags=re.DOTALL)
     if count == 0:
-        print(f"WARNING: Markers not found in {filepath}")
-        return False
-
-    with open(filepath, "w") as f:
-        f.write(new_text)
-    return True
+        print(f"WARNING: Markers {start}...{end} not found")
+        return text, False
+    return new_text, True
 
 
 def main():
@@ -188,7 +209,7 @@ def main():
     repo_map = {r["name"]: r for r in repos}
     config = load_config()
 
-    # --- Update README.md ---
+    # --- Generate repo sections ---
     sections = []
     for cat_name, repo_names in config["categories"].items():
         section = generate_section(cat_name, repo_names, repo_map, config)
@@ -199,14 +220,38 @@ def main():
     if uncategorized:
         sections.append(uncategorized)
 
-    readme_content = "\n\n---\n\n".join(sections)
-    update_file(README_PATH, START_MARKER, END_MARKER, readme_content)
-    print(f"README.md updated")
+    repo_content = "\n\n---\n\n".join(sections)
+
+    # --- Generate stats ---
+    stats_content = generate_stats()
+
+    # --- Update README.md ---
+    with open(README_PATH, "r") as f:
+        readme = f.read()
+
+    readme, ok1 = replace_section(readme, REPO_START, REPO_END, repo_content)
+    readme, ok2 = replace_section(readme, STATS_START, STATS_END, stats_content)
+
+    if ok1 and ok2:
+        with open(README_PATH, "w") as f:
+            f.write(readme)
+        print("README.md updated")
+    else:
+        print("WARNING: Some README markers not found")
 
     # --- Update index.html ---
     html_cards = generate_html_projects(repos, config)
-    update_file(HTML_PATH, HTML_START, HTML_END, html_cards)
-    print(f"index.html updated")
+    with open(HTML_PATH, "r") as f:
+        html_text = f.read()
+
+    html_text, ok3 = replace_section(html_text, HTML_START, HTML_END, html_cards)
+
+    if ok3:
+        with open(HTML_PATH, "w") as f:
+            f.write(html_text)
+        print("index.html updated")
+    else:
+        print("WARNING: HTML markers not found")
 
     print(f"Done — {len(repos)} repos processed")
 

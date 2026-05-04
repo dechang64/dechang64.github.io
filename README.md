@@ -51,8 +51,9 @@ AI / ML     PyTorch · ViT · MAE · YOLOv11 · DINOv2 · FedAvg
 
 ### 📊 GitHub Stats
 
-<img src="https://github-readme-stats.vercel.app/api?username=dechang64&show_icons=true&theme=tokyonight&hide_border=true&count_private=true" width="48%"/>
-<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=dechang64&layout=compact&theme=tokyonight&hide_border=true&langs_count=8" width="48%"/>
+<!-- STATS-AUTO-START -->
+
+<!-- STATS-AUTO-END -->
 
 ### 📫 联系方式
 
